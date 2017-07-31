@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">EpamTest</string>
+    <string name="description_title">Description</string>
+    <string name="no_data">no data</string>
+    <string name="test_data">test_data test_datatest_datatest_data
+    test_datatest_datatest_datatest_datatest_datatest_data
+    test_datatest_datatest_datatest_datatest_da tatest_data
+    test_dat a est_datatest_data est_datatest_datatest_datatest_datatest
+    test_datates t_data test_datatest_data t est_datatest_datatest_datatest_datatest_data
+    test_d atatest_da tatest _datatest_dat atest_datatest_data
+    test_datatest_datatest_datatest_datates</string>
+
+</resources>
