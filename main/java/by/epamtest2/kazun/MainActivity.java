@@ -36,40 +36,46 @@ public class MainActivity extends ListActivity {
 
     private String[] descriptionArray;
     private String[] namesArray;
-    private static String fileNameFI = "posts";
+    private String[] urlsForImageArray;
+
+    private String fileNameFI;
+    private static String fileNameFIInf = "posts";
+    private static String fileNameFIImg = "photos";
 
     // progress dialog
     private ProgressDialog pDialog;
     public static final int progress_bar_type = 0;
 
     // download from url
-    private static String file_url = "https://jsonplaceholder.typicode.com/posts";
+    private static final String file_urlInfo  = "https://jsonplaceholder.typicode.com/posts";
+    private static final String file_urlImage = "https://jsonplaceholder.typicode.com/photos";
 
     private ArrayAdapter<String> mAdapter;
+
+    private int length = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        new DownloadFileFromURL().execute(file_url);
-
         //int i = initArray();
         //Toast.makeText(this, i, Toast.LENGTH_SHORT).show();
 
-        readContent();
+        fileNameFI = fileNameFIInf;
+        new DownloadFileFromURL().execute(file_urlInfo);
         //Log.d("tempStr", tempStr);
+
         try {
             String title;
             String body;
-            int length;
+            String strFromFile = readContent(fileNameFIInf);
 
-            JSONArray jsonArray = new JSONArray(tempStr);
+            JSONArray jsonArray = new JSONArray(strFromFile);
             length = jsonArray.length();
 
             namesArray = new String[length];
             descriptionArray = new String[length];
 
-            Log.d("jsonArray.length() >> ",Integer.toString(length));
+            //Log.d("jsonArray.length() >> ",Integer.toString(length));
 
             for (int i = 0; i < length; i++){
                 JSONObject jsonObject = new JSONObject(jsonArray.getString(i));
@@ -81,10 +87,31 @@ public class MainActivity extends ListActivity {
                 //Log.d("jsonObject(body)", body);
             }
 
-        } catch (JSONException je) { /*JSONException*/ }
+        } catch (JSONException je) {  }
+
+        fileNameFI = fileNameFIImg;
+        new DownloadFileFromURL().execute(file_urlImage);
+
+        try {
+            String thumbnailUrl;
+            String strFromFile = readContent(fileNameFIImg);
+            Log.d("strFromFile >", strFromFile);
+            JSONArray jsonArray = new JSONArray(strFromFile);
+            Log.d("jsonArray.getString >", jsonArray.getString(0));
+
+            urlsForImageArray = new String[length];
+
+            for (int i = 0; i < length; i++){
+                JSONObject jsonObject = new JSONObject(jsonArray.getString(i));
+                thumbnailUrl = jsonObject.getString("thumbnailUrl");
+                Log.d("jO (url) >> ", thumbnailUrl);
+                urlsForImageArray[i] = thumbnailUrl;
+            }
+
+        } catch (JSONException je) { Log.d("JSONArray() > ", "Exception"); }
 
 
-        ArrayAdapter<String> mAdapter = new ArrayAdapter<>(this,
+        mAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, namesArray);
         setListAdapter(mAdapter);
 
@@ -102,10 +129,11 @@ public class MainActivity extends ListActivity {
         startActivity(intent);
     }
 
-    String tempStr = "";
+    //String tempStr = "";
 
-    public void readContent() {
+    public String readContent(String rcFilename) {
         //Integer pos = 0;
+        String reString = "";
         String str;
         //String[] deStr;
         //AssetManager assetMng = this.getResources().getAssets();
@@ -114,7 +142,7 @@ public class MainActivity extends ListActivity {
             //InputStream e = assetMng.open("content.txt");
             InputStream e = new FileInputStream(Environment
                     .getExternalStorageDirectory().toString()
-                    + "/" + fileNameFI);
+                    + "/" + rcFilename);
 
             BufferedReader is = new BufferedReader(new InputStreamReader(e, "windows-1251"));
 
@@ -127,10 +155,10 @@ public class MainActivity extends ListActivity {
                     e.close();
                     is.close();
                     Log.i("readContent", "End reading");
-                    return;
+                    return reString;
                 } else {
                    // try{
-                        tempStr = tempStr + str;
+                        reString = reString + str;
                         //JSONArray jsonArray = new JSONArray(str);
                         //Log.d("jsonArray", jsonArray.getString(1));
                         //JSONObject jsonObject = jsonArray.getJSONObject(5);
@@ -151,7 +179,7 @@ public class MainActivity extends ListActivity {
                 }
             }
         }  catch (IOException var8) {var8.printStackTrace();}
-
+        return reString;
     }
 
 
